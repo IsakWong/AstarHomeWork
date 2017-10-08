@@ -3,5 +3,5 @@ project(AstarHomeWork)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp AstarMap.cpp AstarMap.h)
+set(SOURCE_FILES main.cpp)
 add_executable(AstarHomeWork ${SOURCE_FILES})

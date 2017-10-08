@@ -10,18 +10,21 @@
 #include <vector>
 
 using namespace std;
-typedef vector<vector<char> *> MapData;
+typedef vector<vector<int>> MapData;
 
 class AstarMap {
 public:
     AstarMap(const string &);
     ~AstarMap();
 
-    const static char REACHABLE = ' ';
-    const static char UNREACHABLE = '*';
+    const static char CHAR_REACHABLE = ' ';
+    const static char CHAR_UNREACHABLE = '*';
+    
+    const static int INT_REACHABLE = 0;
+    const static int INT_UNREACHABLE = 1;     
 
 
-    const char get(int x,int y);
+    const int get(int x,int y);
 
     const bool canReach(int x, int y);
 
@@ -35,6 +38,8 @@ public:
 protected:
 
 private:
+    
+    
     MapData mMap;
 
 };

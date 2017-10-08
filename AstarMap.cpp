@@ -10,11 +10,13 @@ AstarMap::AstarMap(const string &mapPath) {
     char buffer[256];
     while (!inputMap.eof()) {
         inputMap.getline(buffer, 256);
-        vector<char> *lineData = new vector<char>();
+        vector<int> lineData = new vector<int>();
         char *p = buffer;
-        int i = 10;
         while (*p) {
-            lineData->push_back(*p);
+            if(*p == CHAR_REACHABLE)
+                lineData.push_back(INT_REACHABLE);
+            else 
+                lineData.push_back(INT_UNREACHABLE);
             p++;
         }
         mMap.push_back(lineData);
@@ -24,7 +26,7 @@ AstarMap::AstarMap(const string &mapPath) {
 
 
 const bool AstarMap::canReach(int x, int y) {
-    if (mMap[x]->operator[](y) == REACHABLE) {
+    if (mMap[x][y] == INT_REACHABLE) {
         return true;
     } else {
         return false;
@@ -33,7 +35,7 @@ const bool AstarMap::canReach(int x, int y) {
 
 const unsigned long AstarMap::getWidth() {
     if (!mMap.empty()) {
-        return mMap[0]->size();
+        return mMap[0].size();
     }
     return 0;
 
@@ -44,12 +46,10 @@ const unsigned long AstarMap::getHeight() {
     return mMap.size();
 }
 
-const char AstarMap::get(int x, int y) {
-    return mMap.operator[](x)->operator[](y);
+const int AstarMap::get(int x, int y) {
+    return mMap[x][y];
 }
 
 AstarMap::~AstarMap() {
-    for(int i =0;i<mMap.size();i++){
-        delete mMap[i];
-    }
+    
 }
