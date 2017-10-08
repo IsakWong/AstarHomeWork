@@ -1,6 +1,8 @@
 #include <iostream>
+#include "AstarMap.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    AstarMap map("../map.txt");
+    cout<<map.getWidth()<<" "<<map.getHeight();
     return 0;
 }
