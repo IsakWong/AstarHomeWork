@@ -3,6 +3,8 @@
 //
 
 #include <sstream>
+#include <iostream>
+#include <afxres.h>
 #include "AstarMap.h"
 
 AstarMap::AstarMap(const string &mapPath) {
@@ -25,7 +27,7 @@ AstarMap::AstarMap(const string &mapPath) {
 }
 
 
-const bool AstarMap::canReach(int x, int y) {
+bool AstarMap::canReach(int x, int y) {
     if (mMap[x][y] == INT_REACHABLE) {
         return true;
     } else {
@@ -52,4 +54,32 @@ const int AstarMap::get(int x, int y) {
 
 AstarMap::~AstarMap() {
     
+}
+
+void AstarMap::drawMap() {
+    HANDLE hOut;
+
+    hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    for(const auto & row : mMap){
+        for(auto col : row){
+            if(col == INT_UNREACHABLE){
+                SetConsoleTextAttribute(hOut,FOREGROUND_RED |FOREGROUND_GREEN |FOREGROUND_BLUE );
+                cout<<'o';
+            }else{
+                if(col == INT_PATH){
+                    SetConsoleTextAttribute(hOut,FOREGROUND_RED);
+                    cout<<'+';
+                }else{
+                    SetConsoleTextAttribute(hOut,FOREGROUND_RED |FOREGROUND_GREEN |FOREGROUND_BLUE );
+                    cout<<' ';
+                }
+            }
+
+        }
+        cout<<endl;
+    }
+}
+
+void AstarMap::setValue(int x, int y, int value) {
+    mMap[x][y] = value;
 }

@@ -1,24 +1,17 @@
 #include <iostream>
+#include <afxres.h>
 #include "Astar.h"
 #include "AstarMap.h"
+
 using namespace std;
 
 int main()
 {
-    //初始化地图，用二维矩阵代表地图，1表示障碍物，0表示可通
-    /*vector<vector<int>> maze={
-        {1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,0,0,1,1,0,1,0,0,0,0,1},
-        {1,0,0,1,1,0,0,0,0,0,0,1},
-        {1,0,0,0,0,0,1,0,0,1,1,1},
-        {1,1,1,0,0,0,0,0,1,1,0,1},
-        {1,1,0,1,0,0,0,0,0,0,0,1},
-        {1,0,1,0,0,0,0,1,0,0,0,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1}
-    };*/
-    
+
+    HANDLE hOut;
+    hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+
     AstarMap map("map.txt");
-    
     Astar astar;
     astar.InitAstar(map.getMap());
     
@@ -28,44 +21,21 @@ int main()
     //A*算法找寻路径
     list<Point *> path=astar.GetPath(start,end,false);
     //打印原始地图
-    MapData &oldMap = map.getMap();
 
-    for(const auto & row : oldMap){
-        for(auto col : row){
-            if(col == map.INT_UNREACHABLE){
-                cout<<'o';
-            }else
-                cout<<' ';
-        }
-        cout<<endl;
-    }
+    map.drawMap();
+
+    AstarMap newMap(map);
     for(auto o : path){
-        map.getMap()[o->x][o->y] = '2';
-        for(const auto & row : oldMap){
-            for(auto col : row){
-                if(col == map.INT_UNREACHABLE){
-                    cout<<'o';
-                }else{
-                    if(col == '2'){
-                        cout<<'+';
-                    }else{
-                        cout<<' ';
-                    }
-                }
-
-            }
-            cout<<endl;
-        }
-        _sleep(300);
         system("cls");
-
+        newMap.setValue(o->x,o->y,map.INT_PATH);
+        newMap.drawMap();
+        _sleep(300);
     }
 
-    //保存路径
-    //打印
+    /*
     for(auto &p:path)
         cout<<'('<<p->x<<','<<p->y<<')'<<endl;
-    
+    */
     system("pause");
     return 0;
 }

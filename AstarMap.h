@@ -22,11 +22,14 @@ public:
     
     int INT_REACHABLE = 0;
     int INT_UNREACHABLE = 1;
+    int INT_PATH = 2;
 
 
     const int get(int x,int y);
 
-    const bool canReach(int x, int y);
+    bool canReach(int x, int y);
+    void setValue(int x,int y,int value);
+
 
 
     MapData &getMap() { return mMap; }
@@ -34,6 +37,8 @@ public:
     const unsigned long getWidth();
 
     const unsigned long getHeight();
+
+    void drawMap();
 
 protected:
 
