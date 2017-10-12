@@ -10,7 +10,7 @@ AstarMap::AstarMap(const string &mapPath) {
     char buffer[256];
     while (!inputMap.eof()) {
         inputMap.getline(buffer, 256);
-        vector<int> lineData = new vector<int>();
+        vector<int> lineData;
         char *p = buffer;
         while (*p) {
             if(*p == CHAR_REACHABLE)

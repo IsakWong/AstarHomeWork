@@ -20,8 +20,8 @@ public:
     const static char CHAR_REACHABLE = ' ';
     const static char CHAR_UNREACHABLE = '*';
     
-    const static int INT_REACHABLE = 0;
-    const static int INT_UNREACHABLE = 1;     
+    int INT_REACHABLE = 0;
+    int INT_UNREACHABLE = 1;
 
 
     const int get(int x,int y);

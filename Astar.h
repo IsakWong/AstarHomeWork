@@ -1,10 +1,12 @@
-#pragma once
+#ifndef ASTAR_H
+#define ASTAR_H
 /*
  //A*算法对象类
  */
 #include <vector>
 #include <list>
 
+#define NULL 0
 const int kCost1=10; //直移一格消耗
 const int kCost2=14; //斜移一格消耗
 
@@ -41,3 +43,4 @@ private:
     std::list<Point *> closeList; //关闭列表
 };
 
+#endif

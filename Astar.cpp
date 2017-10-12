@@ -9,7 +9,7 @@ void Astar::InitAstar(std::vector<std::vector<int>> &_maze)
 int Astar::calcG(Point *temp_start,Point *point)
 {
     int extraG=(abs(point->x-temp_start->x)+abs(point->y-temp_start->y))==1?kCost1:kCost2;
-    int parentG=point->parent==NULL?0:point->parent->G; //如果是初始节点，则其父节点是空
+    int parentG=point->parent== nullptr?0:point->parent->G; //如果是初始节点，则其父节点是空
     return parentG+extraG;
 }
 
@@ -34,7 +34,7 @@ Point *Astar::getLeastFpoint()
                 resPoint=point;
         return resPoint;
     }
-    return NULL;
+    return nullptr;
 }
 
 Point *Astar::findPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner)
@@ -78,7 +78,7 @@ Point *Astar::findPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner)
         }
     }
     
-    return NULL;
+    return nullptr;
 }
 
 std::list<Point *> Astar::GetPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner)
@@ -100,7 +100,7 @@ Point *Astar::isInList(const std::list<Point *> &list,const Point *point) const
     for(auto p:list)
         if(p->x==point->x&&p->y==point->y)
             return p;
-    return NULL;
+    return nullptr;
 }
 
 bool Astar::isCanreach(const Point *point,const Point *target,bool isIgnoreCorner) const
