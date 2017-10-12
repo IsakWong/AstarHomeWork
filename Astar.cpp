@@ -130,10 +130,15 @@ std::vector<Point *> Astar::getSurroundPoints(const Point *point,bool isIgnoreCo
 {
     std::vector<Point *> surroundPoints;
     
-    for(int x=point->x-1;x<=point->x+1;x++)
+    /*for(int x=point->x-1;x<=point->x+1;x++)
         for(int y=point->y-1;y<=point->y+1;y++)
             if(isCanreach(point,new Point(x,y),isIgnoreCorner))
-                surroundPoints.push_back(new Point(x,y));
+                surroundPoints.push_back(new Point(x,y));*/
+    surroundPoints.push_back(new Point(point->x,point->y-1));
+    surroundPoints.push_back(new Point(point->x,point->y+1));
+    surroundPoints.push_back(new Point(point->x-1,point->y));
+    surroundPoints.push_back(new Point(point->x+1,point->y));
+
     
     return surroundPoints;
 }
