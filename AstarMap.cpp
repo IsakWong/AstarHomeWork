@@ -4,7 +4,6 @@
 
 #include <sstream>
 #include <iostream>
-#include <afxres.h>
 #include "AstarMap.h"
 
 AstarMap::AstarMap(const string &mapPath) {
@@ -21,9 +20,10 @@ AstarMap::AstarMap(const string &mapPath) {
                 lineData.push_back(INT_UNREACHABLE);
             p++;
         }
+        if(lineData.empty())
+            break;
         mMap.push_back(lineData);
     }
-
 }
 
 
@@ -37,7 +37,7 @@ bool AstarMap::canReach(int x, int y) {
 
 const unsigned long AstarMap::getWidth() {
     if (!mMap.empty()) {
-        return mMap[0].size();
+        return mMap[0].size() -1;
     }
     return 0;
 
@@ -45,11 +45,11 @@ const unsigned long AstarMap::getWidth() {
 
 const unsigned long AstarMap::getHeight() {
 
-    return mMap.size();
+    return mMap.size()-1;
 }
 
 const int AstarMap::get(int x, int y) {
-    return mMap[x][y];
+    return mMap[y][x];
 }
 
 AstarMap::~AstarMap() {
@@ -57,29 +57,14 @@ AstarMap::~AstarMap() {
 }
 
 void AstarMap::drawMap() {
-    HANDLE hOut;
 
-    hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    for(const auto & row : mMap){
-        for(auto col : row){
-            if(col == INT_UNREACHABLE){
-                SetConsoleTextAttribute(hOut,FOREGROUND_RED |FOREGROUND_GREEN |FOREGROUND_BLUE );
-                cout<<'o';
-            }else{
-                if(col == INT_PATH){
-                    SetConsoleTextAttribute(hOut,FOREGROUND_RED);
-                    cout<<'+';
-                }else{
-                    SetConsoleTextAttribute(hOut,FOREGROUND_RED |FOREGROUND_GREEN |FOREGROUND_BLUE );
-                    cout<<' ';
-                }
-            }
-
-        }
-        cout<<endl;
-    }
 }
 
 void AstarMap::setValue(int x, int y, int value) {
     mMap[x][y] = value;
+}
+
+vector<int> &AstarMap::operator[](int index)
+{
+    return mMap[index];
 }

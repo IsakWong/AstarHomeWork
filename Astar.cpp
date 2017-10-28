@@ -1,9 +1,9 @@
 #include <math.h>
 #include "Astar.h"
 
-void Astar::InitAstar(std::vector<std::vector<int>> &_maze)
+void Astar::InitAstar(AstarMap &_maze)
 {
-    maze=_maze;
+    maze = new AstarMap(_maze);
 }
 
 int Astar::calcG(Point *temp_start,Point *point)
@@ -39,7 +39,13 @@ Point *Astar::getLeastFpoint()
 
 Point *Astar::findPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner)
 {
-    openList.push_back(new Point(startPoint.x,startPoint.y)); //置入起点,拷贝开辟一个节点，内外隔离
+    this->startPoint = startPoint;
+    this->endPoint = endPoint;
+    Point* pStart =  new Point(startPoint.x,startPoint.y);
+    pStart->H=calcH(pStart,&endPoint);
+    pStart->F=calcF(pStart);
+    pStart->G=calcG(pStart,pStart);
+    openList.push_back(pStart); //置入起点,拷贝开辟一个节点，内外隔离
     while(!openList.empty())
     {
         auto curPoint=getLeastFpoint(); //找到F值最小的点
@@ -81,6 +87,11 @@ Point *Astar::findPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner)
     return nullptr;
 }
 
+Astar::Astar()
+{
+
+}
+
 std::list<Point *> Astar::GetPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner)
 {
     Point *result=findPath(startPoint,endPoint,isIgnoreCorner);
@@ -105,9 +116,9 @@ Point *Astar::isInList(const std::list<Point *> &list,const Point *point) const
 
 bool Astar::isCanreach(const Point *point,const Point *target,bool isIgnoreCorner) const
 {
-    if(target->x<0||target->x>maze.size()-1
-       ||target->y<0&&target->y>maze[0].size()-1
-       ||maze[target->x][target->y]==1
+    if(target->x<0||target->x>maze->getWidth()
+       ||target->y<0&&target->y>maze->getHeight()
+       ||maze->get(target->x,target->y)==1
        ||target->x==point->x&&target->y==point->y
        ||isInList(closeList,target)) //如果点与当前节点重合、超出地图、是障碍物、或者在关闭列表中，返回false
         return false;
@@ -118,7 +129,7 @@ bool Astar::isCanreach(const Point *point,const Point *target,bool isIgnoreCorne
         else
         {
             //斜对角要判断是否绊住
-            if(maze[point->x][target->y]==0&&maze[target->x][point->y]==0)
+            if(maze->operator [](point->x)[target->y]==0&&maze->operator [](point->x)[point->y]==0)
                 return true;
             else
                 return isIgnoreCorner;

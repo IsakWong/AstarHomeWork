@@ -34,6 +34,7 @@ public:
 
     MapData &getMap() { return mMap; }
 
+    vector<int> &operator[](int index);
     const unsigned long getWidth();
 
     const unsigned long getHeight();
