@@ -24,6 +24,10 @@ private:
     AstarMap* map;
     Ui::MainWindow *ui;
     Astar astar;
+    Point start;
+    Point end;
+    //A*算法找寻路径
+    list<Point *> path;
 
 };
 

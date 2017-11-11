@@ -2,22 +2,17 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
+    start(1,1),
+    end(5,14),
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    map = new AstarMap("map.txt");
-    astar.InitAstar(*map);
+    map = new AstarMap(30,30);
+    astar.InitAstar(map->getMap());
     //设置起始和结束点
-    Point start(1,1);
-    Point end(5,1);
-    //A*算法找寻路径
-    list<Point *> path=astar.GetPath(start,end,false);
+    path=astar.GetPath(start,end,false);
 
-    AstarMap newMap(*map);
-    for(auto o : path){
-            newMap.setValue(o->x,o->y,map->INT_PATH);
-    }
     setGeometry(-1,-1,20*map->getWidth(),20*map->getHeight());
 }
 
@@ -48,8 +43,8 @@ void MainWindow::paintEvent(QPaintEvent *event)
             painter.drawRect(10*i,iTitleBarHeight+10*j,10,10);
         }
     }
-    int max = 0;
-    int min = 10000;
+    int max = astar.closeList.front()->F;
+    int min = astar.closeList.front()->F;
     for(Point* data:astar.closeList){
         if(data->F>max){
             max = data->F;
@@ -62,15 +57,22 @@ void MainWindow::paintEvent(QPaintEvent *event)
     }
     int range = max-min;
     for(Point* data:astar.closeList){
-        float i = (float)(max - data->F)/(float)range;
-        painter.setBrush(QColor(255,255*i,255));
-        if(map->get(data->x,data->y)==map->INT_REACHABLE){
-            painter.drawRect(10*data->x,iTitleBarHeight+10*data->y,10,10);
-        }
+        float i = (float)(data->F - min)/(float)range;
+        int col = i *255;
+        QColor color(1,119,214,col);
+        painter.setBrush(color);
+        int x = data->x;
+        int y = data->y;
+        if(map->get(x,y)==AstarMap::INT_REACHABLE)
+            painter.drawRect(10*x,iTitleBarHeight+10*y,10,10);
+
     }
-    painter.setBrush(QColor(1,119,214));
-    painter.drawRect(astar.startPoint.x*10,iTitleBarHeight+astar.startPoint.y*10,10,10);
-    painter.setBrush(QColor(119,119,214));
-    painter.drawRect(astar.endPoint.x*10,iTitleBarHeight+astar.endPoint.y*10,10,10);
+    /*
+    for(Point*data:path){
+        painter.setBrush(QColor(255,150,150));
+        int x = data->x;
+        int y = data->y;
+        painter.drawRect(10*x,iTitleBarHeight+10*y,10,10);
+    }*/
 
 }

@@ -38,5 +38,4 @@ FORMS += \
         mainwindow.ui \
     mainwindow.ui
 
-DISTFILES += \
-    Astar.pro.user
+DISTFILES +=

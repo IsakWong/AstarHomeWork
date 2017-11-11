@@ -1,25 +1,25 @@
 #include <math.h>
 #include "Astar.h"
 
-void Astar::InitAstar(AstarMap &_maze)
+void Astar::InitAstar(std::vector<std::vector<int>> &_maze)
 {
-    maze = new AstarMap(_maze);
+    maze=_maze;
 }
 
-int Astar::calcG(Point *temp_start,Point *point)
+float Astar::calcG(Point *temp_start,Point *point)
 {
-    int extraG=(abs(point->x-temp_start->x)+abs(point->y-temp_start->y))==1?kCost1:kCost2;
-    int parentG=point->parent== nullptr?0:point->parent->G; //如果是初始节点，则其父节点是空
+    float extraG=kCost1;
+    float parentG=point->parent== nullptr?0:point->parent->G; //如果是初始节点，则其父节点是空
     return parentG+extraG;
 }
 
-int Astar::calcH(Point *point,Point *end)
+float Astar::calcH(Point *point,Point *end)
 {
     //用简单的欧几里得距离计算H，这个H的计算是关键，还有很多算法，没深入研究^_^
     return sqrt((double)(end->x-point->x)*(double)(end->x-point->x)+(double)(end->y-point->y)*(double)(end->y-point->y))*kCost1;
 }
 
-int Astar::calcF(Point *point)
+float Astar::calcF(Point *point)
 {
     return point->G+point->H;
 }
@@ -39,18 +39,21 @@ Point *Astar::getLeastFpoint()
 
 Point *Astar::findPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner)
 {
-    this->startPoint = startPoint;
-    this->endPoint = endPoint;
-    Point* pStart =  new Point(startPoint.x,startPoint.y);
-    pStart->H=calcH(pStart,&endPoint);
-    pStart->F=calcF(pStart);
-    pStart->G=calcG(pStart,pStart);
-    openList.push_back(pStart); //置入起点,拷贝开辟一个节点，内外隔离
+    openList.clear();
+    closeList.clear();
+    openList.push_back(new Point(startPoint.x,startPoint.y)); //置入起点,拷贝开辟一个节点，内外隔离
     while(!openList.empty())
     {
         auto curPoint=getLeastFpoint(); //找到F值最小的点
         openList.remove(curPoint); //从开启列表中删除
-        closeList.push_back(curPoint); //放到关闭列表
+        Point* closePoint = isInList(closeList,curPoint);
+        if(!closePoint){
+            closeList.push_back(curPoint); //放到关闭列表
+        }else{
+            closePoint->F = curPoint->F;
+            closePoint->G = curPoint->G;
+            closePoint->H = curPoint->H;
+        }
         //1,找到当前周围八个格中可以通过的格子
         auto surroundPoints=getSurroundPoints(curPoint,isIgnoreCorner);
         for(auto &target:surroundPoints)
@@ -87,11 +90,6 @@ Point *Astar::findPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner)
     return nullptr;
 }
 
-Astar::Astar()
-{
-
-}
-
 std::list<Point *> Astar::GetPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner)
 {
     Point *result=findPath(startPoint,endPoint,isIgnoreCorner);
@@ -116,9 +114,9 @@ Point *Astar::isInList(const std::list<Point *> &list,const Point *point) const
 
 bool Astar::isCanreach(const Point *point,const Point *target,bool isIgnoreCorner) const
 {
-    if(target->x<0||target->x>maze->getWidth()
-       ||target->y<0&&target->y>maze->getHeight()
-       ||maze->get(target->x,target->y)==1
+    if(target->x<0||target->x>maze[0].size()-1
+       ||target->y<0&&target->y>maze.size()-1
+       ||maze[target->x][target->y]==1
        ||target->x==point->x&&target->y==point->y
        ||isInList(closeList,target)) //如果点与当前节点重合、超出地图、是障碍物、或者在关闭列表中，返回false
         return false;
@@ -129,7 +127,7 @@ bool Astar::isCanreach(const Point *point,const Point *target,bool isIgnoreCorne
         else
         {
             //斜对角要判断是否绊住
-            if(maze->operator [](point->x)[target->y]==0&&maze->operator [](point->x)[point->y]==0)
+            if(maze[point->x][target->y]==0&&maze[target->x][point->y]==0)
                 return true;
             else
                 return isIgnoreCorner;
@@ -145,10 +143,18 @@ std::vector<Point *> Astar::getSurroundPoints(const Point *point,bool isIgnoreCo
         for(int y=point->y-1;y<=point->y+1;y++)
             if(isCanreach(point,new Point(x,y),isIgnoreCorner))
                 surroundPoints.push_back(new Point(x,y));*/
-    surroundPoints.push_back(new Point(point->x,point->y-1));
-    surroundPoints.push_back(new Point(point->x,point->y+1));
-    surroundPoints.push_back(new Point(point->x-1,point->y));
-    surroundPoints.push_back(new Point(point->x+1,point->y));
+    if(point->y>0){
+        surroundPoints.push_back(new Point(point->x,point->y-1));
+    }
+    if(point->y<maze.size()-1){
+        surroundPoints.push_back(new Point(point->x,point->y+1));
+    }
+    if(point->x>0){
+        surroundPoints.push_back(new Point(point->x-1,point->y));
+    }
+    if(point->x<maze[0].size()-1){
+        surroundPoints.push_back(new Point(point->x+1,point->y));
+    }
 
     
     return surroundPoints;
