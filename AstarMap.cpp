@@ -38,20 +38,12 @@ AstarMap::AstarMap(int width, int height)
         vector<int> lineData;
         for(int i = 0;i<width;i++)
         {
-            lineData.push_back(int(INT_REACHABLE));
+            lineData.push_back(int(INT_UNREACHABLE));
         }
         mMap.push_back(lineData);
     }
-    for(int i = 0;i<width;i++){
-        mMap[0][i] = INT_UNREACHABLE;
-        mMap[height-1][i] = INT_UNREACHABLE;
-    }
-    for(int j = 0;j<height;j++)
-    {
-        mMap[j][0] = INT_UNREACHABLE;
-        mMap[j][height-1] = INT_UNREACHABLE;
-    }
-    createMaze(1,1,width-2,height-2);
+    
+    createMaze(0, 0, width, height);
 }
 
 
@@ -106,59 +98,49 @@ void AstarMap::openAdoor(int x1, int y1, int x2, int y2)
            }
 }
 
-void AstarMap::createMaze(int x, int y, int width, int height)
+void AstarMap::createMaze(size_t Xlefttop, size_t Ylefttop, size_t length, size_t width)
 {
-    int xPos, yPos;
-
-            if (height <= 2 || width <= 2)
-                return;
-
-            //横着画线，在偶数位置画线
-            xPos=y+1+qrand()%(height-1);
-            for (int i = x; i < x + width; i++) {
-                //mMap[xPos][i] = INT_UNREACHABLE;
+    if(length < 0 || width < 0)
+        return;
+    if(length <= 2 || width <= 2){
+        for(int x = Xlefttop; x < Xlefttop + length; ++x){
+            for(int y = Ylefttop; y < Ylefttop + width; ++y){
+                setValue(x, y, INT_REACHABLE);
             }
-
-            //竖着画一条线，在偶数位置画线
-            yPos=x+qrand()%(width-1);
-            for (int i = y; i < y + height; i++) {
-                //mMap[i][yPos] = INT_UNREACHABLE;
-            }
-
-            //随机开三扇门，左侧墙壁为1，逆时针旋转
-            int isClosed = qrand()%4;
-            switch (isClosed)
-            {
-            case 0:
-                openAdoor(xPos + 1, yPos, x + height - 1, yPos);// 2
-                openAdoor(xPos, yPos + 1, xPos, y + width - 1);// 3
-                openAdoor(x, yPos, xPos - 1, yPos);// 4
-                break;
-            case 1:
-                openAdoor(xPos, yPos + 1, xPos, y + width - 1);// 3
-                openAdoor(x, yPos, xPos - 1, yPos);// 4
-                openAdoor(xPos, y, xPos, yPos - 1);// 1
-                break;
-            case 2:
-                openAdoor(x, yPos, xPos - 1, yPos);// 4
-                openAdoor(xPos, y, xPos, yPos - 1);// 1
-                openAdoor(xPos + 1, yPos, x + height - 1, yPos);// 2
-                break;
-            case 3:
-                openAdoor(xPos, y, xPos, yPos - 1);// 1
-                openAdoor(xPos + 1, yPos, x + height - 1, yPos);// 2
-                openAdoor(xPos, yPos + 1, xPos, y + width - 1);// 3
-                break;
-            default:
-                break;
-            }
-
-            // 左上角
-            createMaze(x, y, xPos - x, yPos - y);
-            // 右上角
-            createMaze(x, yPos + 1, xPos - x, width - yPos + y - 1);
-            // 左下角
-            createMaze(xPos + 1, y, height - xPos + x - 1, yPos - y);
-            // 右下角
-            createMaze(xPos + 1, yPos + 1, height - xPos + x - 1, width - yPos + y - 1);
+        }
+    }else{
+        size_t Xwall = Xlefttop + length / 2 - 1;
+        size_t lenSquareLeft = length/2;
+        size_t lenSquareRight = length - lenSquareLeft;
+        size_t Ywall = Ylefttop + width / 2 - 1;
+        size_t widSquareUp = width / 2;
+        size_t widSquareDown = width - widSquareUp;
+         
+        
+        if(widSquareUp > 2){
+            setValue(Xwall, Ylefttop + widSquareUp / 2, INT_REACHABLE)
+        }else{
+            setValue(Xwall, Ylefttop, INT_REACHABLE)
+        }
+        if(widSquareDown > 2){
+            setValue(Xwall, Ylefttop + widSquareUp + widSquareDown / 2, INT_REACHABLE)
+        }else{
+            setValue(Xwall, int y, Ylefttop + widSquareUp)
+        }
+        if(lenSquareLeft > 2){
+            setValue(Xlefttop + lenSquareLeft / 2, Ywall, INT_REACHABLE);
+        }else{
+            setValue(Xlefttop, Ywall, INT_REACHABLE);
+        }
+        if(lenSquareRight > 2){
+            setValue(Xlefttop + lenSquareLeft + lenSquareRight / 2, Ywall, INT_REACHABLE);
+        }else{
+            setValue(Xlefttop + lenSquareLeft, Ywall, INT_REACHABLE);
+        }
+                
+        createMaze(Xlefttop, Ylefttop, lenSquareLeft-1, widSquareUp-1);
+        createMaze(Xlefttop + lenSquareLeft, Ylefttop, lenSquareRight, widSquareUp-1);
+        createMaze(Xlefttop, Ylefttop + widSquareUp, lenSquareLeft-1, widSquareDown);
+        createMaze(Xlefttop + lenSquareLeft, Ylefttop + widSquareUp, lenSquareRight, widSquareDown);
+    }
 }
