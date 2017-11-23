@@ -97,7 +97,27 @@ void AstarMap::openAdoor(int x1, int y1, int x2, int y2)
 
            }
 }
+//左闭右开 获取区间内的奇数 high - low >= 2
+    static int getRand1(int low, int high){
+        srand((int)time(NULL));
+        int gap = rand() % (high - low - 1);
+        if(low%2 == 1){
+            return low + (gap%2==0? gap : gap==low? low+1 : gap-1);
+        }else{
+            return low + (gap%2==1? gap : gap==low? low+1 : gap-1);
+        }
+    }
 
+    //左闭右开 获取区间内的偶数	
+    static int getRand2(int low, int high){
+        srand((int)time(NULL));
+        int gap = rand() % (high - low - 1);
+        if(low%2 == 0){
+            return low + (gap%2==0? gap : gap==1? 0 : gap-1);
+        }else{
+            return low + (gap%2==1? gap : gap==0? 1 : gap-1);
+        }
+    }
 void AstarMap::createMaze(size_t Xlefttop, size_t Ylefttop, size_t length, size_t width)
 {
     if(length < 0 || width < 0)
@@ -109,31 +129,36 @@ void AstarMap::createMaze(size_t Xlefttop, size_t Ylefttop, size_t length, size_
             }
         }
     }else{
-        size_t Xwall = Xlefttop + length / 2 - 1;
-        size_t lenSquareLeft = length/2;
+        size_t lenSquareLeft = getRand2(1, length);
+        size_t Xwall = Xlefttop + lenSquareLeft - 1;
         size_t lenSquareRight = length - lenSquareLeft;
-        size_t Ywall = Ylefttop + width / 2 - 1;
-        size_t widSquareUp = width / 2;
-        size_t widSquareDown = width - widSquareUp;
-         
-        
+
+        //size_t widSquareUp = width / 2;
+        size_t widSquareUp = getRand2(1, width);
+        size_t Ywall = Ylefttop + widSquareUp - 1;
+        size_t widSquareDown = width - widSquareUp;    
+            
         if(widSquareUp > 2){
-            setValue(Xwall, Ylefttop + widSquareUp / 2, INT_REACHABLE)
+            size_t gap = getRand1(0, widSquareUp) - 1;
+            setValue(Xwall, Ylefttop + gap, INT_REACHABLE)
         }else{
             setValue(Xwall, Ylefttop, INT_REACHABLE)
         }
         if(widSquareDown > 2){
-            setValue(Xwall, Ylefttop + widSquareUp + widSquareDown / 2, INT_REACHABLE)
+            size_t gap = getRand1(0, widSquareDown) - 1;
+            setValue(Xwall, Ylefttop + widSquareUp + gap, INT_REACHABLE)
         }else{
             setValue(Xwall, int y, Ylefttop + widSquareUp)
         }
         if(lenSquareLeft > 2){
-            setValue(Xlefttop + lenSquareLeft / 2, Ywall, INT_REACHABLE);
+            size_t gap = getRand1(0, lenSquareLeft) - 1;
+            setValue(Xlefttop + gap, Ywall, INT_REACHABLE);
         }else{
             setValue(Xlefttop, Ywall, INT_REACHABLE);
         }
         if(lenSquareRight > 2){
-            setValue(Xlefttop + lenSquareLeft + lenSquareRight / 2, Ywall, INT_REACHABLE);
+            size_t gap = getRand1(0, lenSquareRight) - 1;
+            setValue(Xlefttop + lenSquareLeft + gap, Ywall, INT_REACHABLE);
         }else{
             setValue(Xlefttop + lenSquareLeft, Ywall, INT_REACHABLE);
         }
