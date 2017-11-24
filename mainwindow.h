@@ -6,6 +6,7 @@
 #include "AstarMap.h"
 #include <QPainter>
 #include <QApplication>
+#include <QTimer>
 
 namespace Ui {
 class MainWindow;
@@ -19,6 +20,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     virtual void paintEvent(QPaintEvent* event);
+    int size = 0;
+    QTimer* timer ;
+
+private slots:
+    void on_pushButton_clicked(bool checked);
+    void xytimerUpDate();
 
 private:
     AstarMap* map;

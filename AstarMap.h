@@ -12,7 +12,7 @@
 #include <QTime>
 
 using namespace std;
-typedef vector<vector<int>> MapData;
+typedef vector< vector<int> > MapData;
 
 class AstarMap {
 public:
@@ -36,7 +36,7 @@ public:
 
     void openAdoor(int x1,int y1,int x2,int y2);
 
-    void createMaze(int x,int y,int width,int height);
+    void createMaze(size_t Xlefttop, size_t Ylefttop, size_t length, size_t width);
 
     MapData &getMap() { return mMap; }
 

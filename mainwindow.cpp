@@ -2,18 +2,19 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    start(1,1),
-    end(5,14),
+    start(0,0),
+    end(1,1),
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     map = new AstarMap(30,30);
     astar.InitAstar(map->getMap());
-    //设置起始和结束点
     path=astar.GetPath(start,end,false);
-
-    setGeometry(-1,-1,20*map->getWidth(),20*map->getHeight());
+    //设置起始和结束点
+    timer= new QTimer(this);   //新建定时器
+    connect(timer,SIGNAL(timeout()),this,SLOT(xytimerUpDate()));//关联定时器计满信号和相应的槽函数
+    timer->setInterval(10);
 }
 
 MainWindow::~MainWindow()
@@ -28,7 +29,8 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 
 
-    int iTitleBarHeight = style()->pixelMetric(QStyle::PM_TitleBarHeight);
+    int leftDelta = ui->pushButton->geometry().left();
+    int iTitleBarHeight = ui->pushButton->geometry().bottom() + style()->pixelMetric(QStyle::PM_TitleBarHeight);
     painter.setPen(QPen(QColor(255,255,255),0,Qt::PenStyle::NoPen));
     for(int i = 0;i<map->getWidth();i++){
         for(int j = 0;j<map->getHeight();j++){
@@ -40,7 +42,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
                 painter.setBrush(QColor(255,255,255));
             }
-            painter.drawRect(10*i,iTitleBarHeight+10*j,10,10);
+            painter.drawRect(leftDelta+10*i,iTitleBarHeight+10*j,10,10);
         }
     }
     int max = astar.closeList.front()->F;
@@ -56,7 +58,9 @@ void MainWindow::paintEvent(QPaintEvent *event)
         }
     }
     int range = max-min;
+    int closeSize = 0;
     for(Point* data:astar.closeList){
+        closeSize++;
         float i = (float)(data->F - min)/(float)range;
         int col = i *255;
         QColor color(1,119,214,col);
@@ -64,15 +68,45 @@ void MainWindow::paintEvent(QPaintEvent *event)
         int x = data->x;
         int y = data->y;
         if(map->get(x,y)==AstarMap::INT_REACHABLE)
-            painter.drawRect(10*x,iTitleBarHeight+10*y,10,10);
+            painter.drawRect(leftDelta+10*x,iTitleBarHeight+10*y,10,10);
+        if(closeSize >size){
 
+            return ;
+        }
     }
-    /*
     for(Point*data:path){
         painter.setBrush(QColor(255,150,150));
         int x = data->x;
         int y = data->y;
-        painter.drawRect(10*x,iTitleBarHeight+10*y,10,10);
-    }*/
+        painter.drawRect(leftDelta+10*x,iTitleBarHeight+10*y,10,10);
+    }
 
+
+}
+
+void MainWindow::on_pushButton_clicked(bool checked)
+{
+    int startX = ui->startX->toPlainText().toInt();
+    int startY = ui->startY->toPlainText().toInt();
+    int endX = ui->endX->toPlainText().toInt();
+    int endY = ui->endY->toPlainText().toInt();
+    start.x = startX;
+    start.y = startY;
+    end.x = endX;
+    end.y = endY;
+    if(map->canReach(endX,endY)){
+
+        path=astar.GetPath(start,end,false);
+        size = 0;
+
+        timer->start();
+    }else{
+
+    }
+}
+
+void MainWindow::xytimerUpDate()
+{
+    size++;
+    this->update();
 }

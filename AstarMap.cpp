@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include "AstarMap.h"
+#include <time.h>
 
 AstarMap::AstarMap(const string &mapPath) {
     fstream inputMap(mapPath, ios::in);
@@ -72,15 +73,18 @@ const int AstarMap::get(int x, int y) {
     return mMap[y][x];
 }
 
-AstarMap::~AstarMap() {
+AstarMap::~AstarMap()
+{
     
 }
 
-void AstarMap::drawMap() {
+void AstarMap::drawMap()
+{
 
 }
 
-void AstarMap::setValue(int x, int y, int value) {
+void AstarMap::setValue(int x, int y, int value)
+{
     mMap[x][y] = value;
 }
 
@@ -98,7 +102,8 @@ void AstarMap::openAdoor(int x1, int y1, int x2, int y2)
            }
 }
 //左闭右开 获取区间内的奇数 high - low >= 2
-    static int getRand1(int low, int high){
+    static int getRand1(int low, int high)
+    {
         srand((int)time(NULL));
         int gap = rand() % (high - low - 1);
         if(low%2 == 1){
@@ -109,7 +114,8 @@ void AstarMap::openAdoor(int x1, int y1, int x2, int y2)
     }
 
     //左闭右开 获取区间内的偶数	
-    static int getRand2(int low, int high){
+    static int getRand2(int low, int high)
+    {
         srand((int)time(NULL));
         int gap = rand() % (high - low - 1);
         if(low%2 == 0){
@@ -140,15 +146,15 @@ void AstarMap::createMaze(size_t Xlefttop, size_t Ylefttop, size_t length, size_
             
         if(widSquareUp > 2){
             size_t gap = getRand1(0, widSquareUp) - 1;
-            setValue(Xwall, Ylefttop + gap, INT_REACHABLE)
+            setValue(Xwall, Ylefttop + gap, INT_REACHABLE);
         }else{
-            setValue(Xwall, Ylefttop, INT_REACHABLE)
+            setValue(Xwall, Ylefttop, INT_REACHABLE);
         }
         if(widSquareDown > 2){
             size_t gap = getRand1(0, widSquareDown) - 1;
-            setValue(Xwall, Ylefttop + widSquareUp + gap, INT_REACHABLE)
+            setValue(Xwall, Ylefttop + widSquareUp + gap, INT_REACHABLE);
         }else{
-            setValue(Xwall, int y, Ylefttop + widSquareUp)
+            setValue(Xwall, Ylefttop + widSquareUp, INT_REACHABLE);
         }
         if(lenSquareLeft > 2){
             size_t gap = getRand1(0, lenSquareLeft) - 1;

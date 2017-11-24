@@ -23,9 +23,9 @@ struct Point
 class Astar
 {
 public:
-    void InitAstar(std::vector<std::vector<int>> &_maze);
-    std::list<Point *> GetPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner);
-    std::vector<std::vector<int>> maze;
+    void InitAstar(std::vector<std::vector<int> > &_maze);
+    std::list<Point * > GetPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner);
+    std::vector<std::vector<int> > maze;
     std::list<Point *> openList;  //开启列表
     std::list<Point *> closeList; //关闭列表
     

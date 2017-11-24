@@ -50,9 +50,6 @@ Point *Astar::findPath(Point &startPoint,Point &endPoint,bool isIgnoreCorner)
         if(!closePoint){
             closeList.push_back(curPoint); //放到关闭列表
         }else{
-            closePoint->F = curPoint->F;
-            closePoint->G = curPoint->G;
-            closePoint->H = curPoint->H;
         }
         //1,找到当前周围八个格中可以通过的格子
         auto surroundPoints=getSurroundPoints(curPoint,isIgnoreCorner);
@@ -143,17 +140,21 @@ std::vector<Point *> Astar::getSurroundPoints(const Point *point,bool isIgnoreCo
         for(int y=point->y-1;y<=point->y+1;y++)
             if(isCanreach(point,new Point(x,y),isIgnoreCorner))
                 surroundPoints.push_back(new Point(x,y));*/
-    if(point->y>0){
-        surroundPoints.push_back(new Point(point->x,point->y-1));
+    Point*p = new Point(point->x,point->y-1);
+    if(isCanreach(point,p,isIgnoreCorner)&&point->y>0){
+        surroundPoints.push_back(p);
     }
-    if(point->y<maze.size()-1){
-        surroundPoints.push_back(new Point(point->x,point->y+1));
+    Point*p2 = new Point(point->x,point->y+1);
+    if(isCanreach(point,p2,isIgnoreCorner)&&point->y<maze.size()-1){
+        surroundPoints.push_back(p2);
     }
-    if(point->x>0){
-        surroundPoints.push_back(new Point(point->x-1,point->y));
+    Point*p3 = new Point(point->x-1,point->y);
+    if(isCanreach(point,p3,isIgnoreCorner)&&point->x>0){
+        surroundPoints.push_back(p3);
     }
-    if(point->x<maze[0].size()-1){
-        surroundPoints.push_back(new Point(point->x+1,point->y));
+    Point*p4 = new Point(point->x+1,point->y);
+    if(isCanreach(point,p4,isIgnoreCorner)&&point->x<maze[0].size()-1){
+        surroundPoints.push_back(p4);
     }
 
     
